@@ -3,16 +3,18 @@ import PropTypes from "prop-types";
 
 export function Registration(props){
     const [username, setUsername] = useState('');
-    const [ password, setPassword ] = useState('');
+    const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [birthday, setBirthday] = useState('');
+
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(username, password, email, birthday);
         /* Send a request to the server for authentication */
         /* then call props.onLoggedIn(username) */
-         props.Registration(username);
+         props.onRegistration(username);
       };
+      
         return(
             <form>
                 <h1>Registration Page</h1>
