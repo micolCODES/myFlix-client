@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from "prop-types";
 
 class Button extends React.Component {
     /*
@@ -45,6 +46,7 @@ export function LoginView(props) {
     </form>
   );
 }
+
 LoginView.propTypes = {
     user: PropTypes.shape({
       username: PropTypes.string.isRequired,
