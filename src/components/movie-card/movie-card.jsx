@@ -5,30 +5,29 @@ import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Row';
 
-import { MovieView } from '../movie-view/movie-view';
+import { Link } from "react-router-dom";
+
+//import { MovieView } from '../movie-view/movie-view';
 
 export class MovieCard extends React.Component {
   render() {
-    const { movie, onMovieClick } = this.props;
+    const { movie} = this.props;
 
     return (
-      <Row className="main-view justify-content-md-center">
-        {movie
-          ? (
-            <Col md={8}>
-              <MovieView movie={movie} onBackClick={newSelectedMovie => { this.setSelectedMovie(newSelectedMovie); }} />
-            </Col>
-          )
-          : movies.map(movie => (
-            <Col md={3}>
-              <MovieCard key={movie._id} movie={movie} onMovieClick={newSelectedMovie => { this.setSelectedMovie(newSelectedMovie); }}/>
-            </Col>
-          ))
-        }
-      </Row>
+      <Card>
+        <Card.Img variant="top" src={movie.imageURL} />
+        <Card.Body>
+          <Card.Title>{movie.title}</Card.Title>
+          <Card.Text>{movie.synopsis}</Card.Text>
+          <Link to={`/movies/${movie._id}`}>
+            <Button variant="link">Open</Button>
+          </Link>
+        </Card.Body>
+      </Card>
     );
   }
 }
+
 
 MovieCard.propTypes = {
   movie: PropTypes.shape({

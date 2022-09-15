@@ -1,10 +1,13 @@
 import React from 'react';
+import { Link } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+
 
 export class MovieView extends React.Component {
 
   render() {
     const { movie, onBackClick } = this.props;
-
     return (
       <div className="movie-view">
         <div className="movie-poster">
@@ -21,6 +24,16 @@ export class MovieView extends React.Component {
         <div className="movie-director">
           <span className="label">Director: </span>
           <span className="value">{movie.director.name}</span>
+          <Link to={`/directors/${movie.director.name}`}>
+            <Button variant="link">Director</Button>
+          </Link>
+          <Route path="/directors/:name" render={({ match, history }) => {
+            if (movies.length === 0) return <div className="main-view" />;
+            return <Col md={8}>
+              <DirectorView director={movies.find(m => m.Director.Name === match.params.name).Director} onBackClick={() => history.goBack()} />
+            </Col>
+          }
+          } />
         </div>
         <div className="movie-actors">
           <span className="label">Actors: </span>
@@ -29,6 +42,9 @@ export class MovieView extends React.Component {
         <div className="movie-genre">
           <span className="label">Genre: </span>
           <span className="value">{movie.genre.name}</span>
+          <Link to={`/genres/${movie.genre.name}`}>
+            <Button variant="link">Genre</Button>
+          </Link>
         </div>
         <div className="movie-symnopsis">
           <span className="label">Synopsis: </span>
