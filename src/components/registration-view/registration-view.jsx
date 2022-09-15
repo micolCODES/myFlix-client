@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import { Row, Col, Container, Form, Button } from 'react-bootstrap';
+import { Row, Col, Card, Container, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './registration-view.scss';
@@ -51,7 +51,6 @@ export function RegistrationView(props) {
         const isReq = validate();
         if (isReq) {
             axios.post('https://micolsmovieapp.herokuapp.com/users', {
-                Name: name,
                 Username: username,
                 Password: password,
                 Email: email,
@@ -65,17 +64,93 @@ export function RegistrationView(props) {
                 })
                 .catch(response => {
                     console.error(response);
-                    alert('unable to register');
+                    alert('Unable to register the user');
                 });
         }
-
-        //console.log(username, password, email, birthday);
-        /* Send a request to the server for authentication */
-        /* then call props.onLoggedIn(username) */
-        // props.onRegistration(username);
     };
 
     return (
+        <Container className="mt-5">
+          <Row className="justify-content-sm-center">
+            <Col xs={12} sm={9} md={7} lg={6} xl={5}>
+              <Card variant="light" bg="light">
+                <Card.Body>
+                  <h1>Sign Up</h1>
+                  <Form>
+                    <Form.Group className="mt-4 mb-3">
+                      <Form.Label>Username</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={username}
+                        onChange={(event) => setUsername(event.target.value)}
+                        placeholder="Enter your username"
+                      />
+                      {values.usernameErr && (
+                        <p className="validation-message">{values.usernameErr}</p>
+                      )}
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        type="password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        placeholder="Enter your password"
+                      />
+                      {values.passwordErr && (
+                        <p className="validation-message">{values.passwordErr}</p>
+                      )}
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="Enter your email"
+                      />
+                      {values.emailErr && (
+                        <p className="validation-message">{values.emailErr}</p>
+                      )}
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Birthdate</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={birthday}
+                        onChange={(event) => setBirthday(event.target.value)}
+                        // placeholder="Enter your birthdate."
+                        // pattern="/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/"
+                      />
+                      {values.birthdayErr && (
+                        <p className="validation-message">{values.birthdayErr}</p>
+                      )}
+                    </Form.Group>
+                    <Button
+                      className="mt-3"
+                      type="submit"
+                      variant="success"
+                      onClick={handleSubmit}
+                    >
+                      Submit
+                    </Button>
+                  </Form>
+                </Card.Body>
+                <Card.Footer className="pr-0 my-0">
+                  <Link to="/">
+                    <Button className="col-10 offset-1" variant="link">
+                      Already registered? Log In
+                    </Button>
+                  </Link>
+                </Card.Footer>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      );
+    }
+
+    /*return (
         <Row className='mt-5'>
             <Col md={12}>
                 <Form>
@@ -105,23 +180,7 @@ export function RegistrationView(props) {
                         <Form.Control type="date" value={birthday} onChange={e => setBirthday(e.target.value)} />
                     </Form.Group>
 
-                    {/*<label>
-                    Username:
-                    <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
-                    {values.usernameErr && <p>{values.usernameErr}</p>}
-                </label>
-                <label>
-                    Password:
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-                </label>
-                <label>
-                    Email-Id:
-                </label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)}/>
-                <label>
-                    Birthday:
-                </label>
-        <input type="birthday" value={birthday} onChange={e => setBirthday(e.target.value)}/>*/}
+                    }
                     <Button variant="primary" type="submit" onClick={handleSubmit}>Submit</Button>
                     <p></p>
                     <p>Already registed? <Link to={'/'}>Click here</Link> to sign in</p>
@@ -139,4 +198,4 @@ RegistrationView.propTypes = {
         Password: PropTypes.string.isRequired,
         Email: PropTypes.string.isRequired
     }),
-};
+};*/

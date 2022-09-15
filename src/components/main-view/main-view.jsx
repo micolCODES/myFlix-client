@@ -2,12 +2,13 @@ import React from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import axios from 'axios';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Menu } from '../navbar/navbar';
+import { NavBar } from '../nav-bar/nav-bar';
 import { LoginView } from '../login-view/login-view';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
 import { RegistrationView } from '../registration-view/registration-view';
 import { DirectorView } from '../director-view/director-view';
+import { GenreView } from '../genre-view/genre-view';
 import { ProfileView } from '../profile-view/profile-view';
 
 import './main-view.scss';
@@ -35,7 +36,7 @@ export class MainView extends React.Component {
         });
       })
       .catch(function (error) {
-        console.log(error);
+        console.log('Error: ' + error);
       });
   }
 
@@ -60,7 +61,6 @@ export class MainView extends React.Component {
   /* When a user successfully logs in, this function updates the `user` property in state to that *particular user*/
 
   onLoggedIn(authData) {
-    console.log(authData);
     this.setState({
       user: authData.user.Username
     });
@@ -69,14 +69,6 @@ export class MainView extends React.Component {
     localStorage.setItem('user', authData.user.Username);
     this.getMovies(authData.token);
   }
-
-  /*onLoggedOut() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.setState({
-      user: null
-    });
-  }*/
 
 
 
@@ -87,60 +79,94 @@ export class MainView extends React.Component {
       <Col>
         <LoginView onLoggedIn={user => this.onLoggedIn(user)} />
       </Col>
-    </Row>
-    if (movies.length === 0) return <div className="main-view" />;*/
+    </Row>*/
+    
+    if (!movies)
+    return <div className="main-view">The list is empty</div>;
+
 
     return (
       <Router>
-        <Menu user={user} />
-        <Container>
-          <Row className="main-view justify-content-md-center">
-            <Route exact path="/" render={() => {
-              if (!user) return <Col>
-                <LoginView onLoggedIn={user => this.onLoggedIn(user)} />
-              </Col>
-              return movies.map(m => (
-                <Col md={3} key={m._id}>
-                  <MovieCard movie={m} />
-                </Col>
-              ))
-            }} />
-            <Route path="/register" render={() => {
-              return <Col>
-                <RegistrationView />
-              </Col>
-            }} />
-            <Route path='/movies/:id' render={({ match, history }) => {
-              console.log(movies, match.params.id);
-              if (!user) return <Col>
-                <LoginView onLoggedIn={user => this.onLoggedIn(user)} />
-              </Col>
-              return <Col md={8}>
-                <MovieView movie={movies.find(m => m._id === match.params.id)} onBackClick={() => history.goBack()} />
-              </Col>
-            }} />
-            <Route path='/movie-director/:id' render={({ match, history }) => {
-              if (!user) return <Col>
-                <LoginView onLoggedIn={user => this.onLoggedIn(user)} />
-              </Col>
-              return <Col>
-                <DirectorView movies={movies.find(m => m._id === match.params.id)} onBackClick={() => history.goBack()} />
-              </Col>
-            }} />
-            <Route path='/users/${user}' render={({ match, history }) => {
-              if (!user) return <Redirect to="/" />
-              return <Col>
-                <ProfileView movies={movies} user={user} onBackClick={() => history.goBack()} />
-              </Col>
-            }} />
-            <Route path='/user-update/${user}' render={({ match, history }) => {
-              if (!user) return <Redirect to="/" />
-              return <Col>
-                <UserUpdate user={user} onBackClick={() => history.goBack()} />
-              </Col>
-            }} />
+        <NavBar />
+        <Container fluid>
+          <Route
+            exact
+            path="/"
+            render={() => {
+              if (!user) {
+                return <LoginView onLoggedIn={this.onLoggedIn} />;
+              }
+              return (
+                <Row className="main-view-width mx-auto justify-content-center mt-3">
+                  {movies.map((movie) => (
+                    <MovieCard key={movie._id} movie={movie}>
+                      {movie.title}
+                    </MovieCard>
+                  ))}
+                </Row>
+              );
+            }}
+          />
+          <Route
+            path="/register"
+            render={() => {
+              return <RegistrationView />;
+            }}
+          />
+          <Route
+            path="/movies/:movieId"
+            render={({ match, history }) => (
+              <MovieView
+                movie={movies.find((m) => m._id === match.params.movieId)}
+              goBack={history.goBack}
+              />
+            )}
+            />
 
-          </Row>
+            <Route
+              path="/directors/:directorName"
+              render={({ match, history }) => (
+                <DirectorView
+                  director={
+                    movies.find(
+                      (m) => m.director.name === match.params.directorName
+                    ).director
+                  }
+                  directorMovies={movies.filter(
+                    (m) => m.director.name === match.params.directorName
+                  )}
+                  goBack={history.goBack}
+                />
+              )}
+            />
+
+            <Route
+              path="/genres/:genreName"
+              render={({ match, history }) => (
+                <GenreView
+                  genreMovies={movies.filter(
+                    (movie) => movie.genre.name === match.params.genreName
+                  )}
+                  genre={
+                    movies.find(
+                      (movie) => movie.genre.name === match.params.genreName
+                    ).genre
+                  }
+                  goBack={history.goBack}
+                />
+              )}
+            />
+
+            <Route
+              path="/users/:username"
+              render={({ history }) => {
+                if (!user) return <Redirect to="/" />;
+                return (
+                  <ProfileView user={this.state.user} goBack={history.goBack} />
+                );
+              }}
+            />
+
         </Container>
       </Router>
     );
