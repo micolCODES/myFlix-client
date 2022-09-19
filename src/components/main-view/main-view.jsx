@@ -11,15 +11,17 @@ import { DirectorView } from '../director-view/director-view';
 import { GenreView } from '../genre-view/genre-view';
 import { ProfileView } from '../profile-view/profile-view';
 
+import { setMovies } from '../../actions/actions';
+import { MoviesList } from '../movies-list/movies-list';
+
 import './main-view.scss';
 
-export class MainView extends React.Component {
+class MainView extends React.Component {
 
   constructor() {
     super();
     // Initial state is set to null
     this.state = {
-      movies: [],
       user: null
     };
   }
@@ -29,11 +31,7 @@ export class MainView extends React.Component {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {
-        console.log('setting the state movies', response.data);
-        // Assign the result to the state
-        this.setState({
-          movies: response.data
-        });
+        this.props.setMovies(response.data);
       })
       .catch(function (error) {
         console.log('Error: ' + error);
@@ -73,7 +71,8 @@ export class MainView extends React.Component {
 
 
   render() {
-    const { movies, user } = this.state;
+    let { movies } = this.props;
+    let { user } = this.state;
 
     /*if (!user) return <Row>
       <Col>
@@ -88,31 +87,23 @@ export class MainView extends React.Component {
     return (
       <Router>
         <NavBar />
-        <Container fluid>
-          <Route
-            exact
-            path="/"
-            render={() => {
-              if (!user) {
-                return <LoginView onLoggedIn={this.onLoggedIn} />;
-              }
-              return (
-                <Row className="main-view-width mx-auto justify-content-center mt-3">
-                  {movies.map((movie) => (
-                    <MovieCard key={movie._id} movie={movie}>
-                      {movie.title}
-                    </MovieCard>
-                  ))}
-                </Row>
-              );
-            }}
-          />
+        <Row className="main-view justify-content-md-center">
+        <Route exact path="/" render={() => {
+            if (!user) return <Col>
+              <LoginView onLoggedIn={user => this.onLoggedIn(user)} />
+            </Col>
+            if (movies.length === 0) return <div className="main-view" />;
+            // #6
+            return <MoviesList movies={movies}/>;
+          }} />
+
           <Route
             path="/register"
             render={() => {
               return <RegistrationView />;
             }}
           />
+
           <Route
             path="/movies/:movieId"
             render={({ match, history }) => (
@@ -167,8 +158,14 @@ export class MainView extends React.Component {
               }}
             />
 
-        </Container>
+        </Row>
       </Router>
     );
   }
 }
+
+let mapStateToProps = state => {
+  return { movies: state.movies }
+}
+
+export default connect(mapStateToProps, { setMovies } )(MainView);
