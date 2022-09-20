@@ -1,9 +1,27 @@
 import React from 'react';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './nav-bar.scss';
 
-export const NavBar = () => {
+export const NavBar = ({user}) => {
+  const handleLogOut = (e) => {
+    e.preventDefault();
+    localStorage.clear();
+    window.open("/", "_self");
+    props.onLoggedOut(user);
+  };
+
+  const isAuth = () => {
+    if (typeof window == "undefined") {
+      return false;
+    }
+    if (localStorage.getItem("token")) {
+      return localStorage.getItem("token");
+    } else {
+      return false;
+    }
+  };
+
   return (
     <Navbar
       collapseOnSelect
@@ -23,17 +41,18 @@ export const NavBar = () => {
           className="justify-content-end"
         >
           <Nav className="justify-content-end">
-            <Link className="nav-link" to="/users/username">
-              Profile
-            </Link>
-
-            <Link className="nav-link" to="/register">
-              Signup
-            </Link>
-
-            <Link className="nav-link" to="/">
-              Signout
-            </Link>
+          {isAuth() && (
+              <Nav.Link as={Link} to={`/users/${user}`}>
+                {user}
+              </Nav.Link>
+            )}
+            {isAuth() && (
+              <Button className="logout" variant="link" onClick={handleLogOut}>
+                Logout
+              </Button>
+            )}
+            {!isAuth() && <Nav.Link href="/">Sign in</Nav.Link>}
+            {!isAuth() && <Nav.Link href="/register">Sign up</Nav.Link>}
           </Nav>
         </Navbar.Collapse>
       </Container>
