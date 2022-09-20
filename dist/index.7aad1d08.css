@@ -1,0 +1,110 @@
+.logo {
+  min-width: 180px;
+  min-height: 34px;
+  max-width: 250px;
+  fill: #fff200;
+}
+
+.stripes {
+  background-image: repeating-linear-gradient(135deg, #333, #333 70px, #555 70px 140px);
+}
+
+.nav-link {
+  padding-right: 10px;
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #ffffffb3 !important;
+}
+
+.nav-link:hover {
+  color: #ffffffe6 !important;
+  text-decoration: underline !important;
+}
+
+.view-background {
+  min-height: 100vh;
+  background: linear-gradient(90deg, #aaa 0%, #dcdcdc 15% 85%, #aaa 100%);
+}
+
+.poster {
+  object-fit: cover;
+  object-position: 50% 50%;
+  width: 100%;
+}
+
+.title {
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 3rem;
+}
+
+.specs {
+  color: #fff;
+  padding-right: 10px;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+
+
+h3 {
+  font-size: 1.25rem !important;
+}
+
+#mini {
+  color: gray;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(90deg, #aaa 0%, #dcdcdc 15% 85%, #aaa 100%);
+  font-size: 1.1em;
+  font-family: Barlow, sans-serif !important;
+}
+
+.my-flix {
+  font-size: 2em;
+}
+
+.movie-view {
+  width: 350px;
+  background-color: #fff;
+  border-radius: 3px;
+  margin: 1em;
+  padding: 1em;
+}
+
+.fw-light {
+  font-weight: 300;
+}
+
+.fw-bold {
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 1.6rem;
+  font-weight: 200;
+}
+
+.validation-message {
+  color: red;
+  padding-left: 5px;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.validation-message:before {
+  content: "↪ ";
+}
+
+.view-background {
+  min-height: 100vh;
+  background: linear-gradient(90deg, #aaa 0%, #dcdcdc 15% 85%, #aaa 100%);
+}
+
+/*# sourceMappingURL=index.7aad1d08.css.map */

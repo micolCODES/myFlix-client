@@ -10,9 +10,10 @@ import { RegistrationView } from '../registration-view/registration-view';
 import { DirectorView } from '../director-view/director-view';
 import { GenreView } from '../genre-view/genre-view';
 import { ProfileView } from '../profile-view/profile-view';
+import { connect } from 'react-redux';
 
 import { setMovies } from '../../actions/actions';
-import { MoviesList } from '../movies-list/movies-list';
+import MoviesList from '../movies-list/movies-list';
 
 import './main-view.scss';
 
