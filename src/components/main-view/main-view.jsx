@@ -87,14 +87,14 @@ export class MainView extends React.Component {
 
     return (
       <Router>
-        <NavBar />
+        <NavBar user={user} />
         <Container fluid>
           <Route
             exact
             path="/"
             render={() => {
               if (!user) {
-                return <LoginView onLoggedIn={this.onLoggedIn} />;
+                return <LoginView onLoggedIn={this.onLoggedIn.bind(this)} />;
               }
               return (
                 <Row className="main-view-width mx-auto justify-content-center mt-3">

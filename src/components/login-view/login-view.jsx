@@ -44,11 +44,12 @@ export function LoginView(props) {
         Password: Password
       })
       .then(response => {
+        console.log(response.data,'from handle');
         const data = response.data;
         props.onLoggedIn(data);
       })
       .catch(e => {
-        console.log('no such user')
+        console.log('no such user', e)
       });
     }
   };
