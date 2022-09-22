@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import axios from 'axios';
 import { Container, Row, Col } from 'react-bootstrap';
 import { NavBar } from '../nav-bar/nav-bar';
@@ -23,7 +23,8 @@ class MainView extends React.Component {
     super();
     // Initial state is set to null
     this.state = {
-      user: null
+      user: null,
+      userObj: null
     };
   }
 
@@ -39,6 +40,18 @@ class MainView extends React.Component {
       });
   }
 
+  getUser(username, token) {
+    axios.get(`https://micolsmovieapp.herokuapp.com/users/${username}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(response => {
+        this.setState({ userObj: response.data });
+      })
+      .catch(function (error) {
+        console.log('Error: ' + error);
+      });
+  }
+
   componentDidMount() {
     let accessToken = localStorage.getItem('token');
     if (accessToken !== null) {
@@ -46,6 +59,7 @@ class MainView extends React.Component {
         user: localStorage.getItem('user')
       });
       this.getMovies(accessToken);
+      this.getUser(localStorage.getItem('user'), accessToken);
     }
   }
 
@@ -56,6 +70,58 @@ class MainView extends React.Component {
       selectedMovie: movie
     });
   }*/
+
+  handleFavorite = (movieId, action) => {
+    console.log("HandleFav", movieId, action)
+    const { user, userObj } = this.state;
+    const accessToken = localStorage.getItem("token");
+    if (accessToken !== null && user !== null) {
+      // Add MovieID to Favorites
+      if (action === "add") {
+        console.log(userObj, user)
+        this.setState({ userObj: {
+          ...userObj,
+          FavoriteMovies: [...userObj.FavoriteMovies, movieId] },
+        });
+        axios
+          .post(
+            `https://micolsmovieapp.herokuapp.com/users/${user}/movies/${movieId}`,
+            {},
+            {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            }
+          )
+          .then((res) => {
+            alert(`Movie added to ${user} favorite movies`);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+        // Remove MovieID from Favorites
+      } else if (action === "remove") {
+        this.setState({
+          userObj: {
+            ...userObj,
+            FavoriteMovies: userObj.FavoriteMovies.filter((id) => id !== movieId),
+          }
+        });
+        axios
+          .delete(
+            `https://micolsmovieapp.herokuapp.com/users/${user}/movies/${movieId}`,
+            {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            }
+          )
+          .then((res) => {
+            alert(`Movie removed from ${user} favorite movies`);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
+  };
 
   /* When a user successfully logs in, this function updates the `user` property in state to that *particular user*/
 
@@ -73,29 +139,29 @@ class MainView extends React.Component {
 
   render() {
     let { movies } = this.props;
-    let { user } = this.state;
-
+    let { user, userObj } = this.state;
+    console.log(userObj);
     /*if (!user) return <Row>
       <Col>
         <LoginView onLoggedIn={user => this.onLoggedIn(user)} />
       </Col>
     </Row>*/
-    
+
     if (!movies)
-    return <div className="main-view">The list is empty</div>;
+      return <div className="main-view">The list is empty</div>;
 
 
     return (
       <Router>
         <NavBar user={user} />
         <Row className="main-view justify-content-md-center">
-        <Route exact path="/" render={() => {
+          <Route exact path="/" render={() => {
             if (!user) return <Col>
               <LoginView onLoggedIn={user => this.onLoggedIn(user)} />
             </Col>
             if (movies.length === 0) return <div className="main-view" />;
             // #6
-            return <MoviesList movies={movies}/>;
+            return <MoviesList movies={movies} />;
           }} />
 
           <Route
@@ -110,54 +176,55 @@ class MainView extends React.Component {
             render={({ match, history }) => (
               <MovieView
                 movie={movies.find((m) => m._id === match.params.movieId)}
-              goBack={history.goBack}
+                goBack={history.goBack}
+                handleFavorite={this.handleFavorite}
               />
             )}
-            />
+          />
 
-            <Route
-              path="/directors/:directorName"
-              render={({ match, history }) => (
-                <DirectorView
-                  director={
-                    movies.find(
-                      (m) => m.director.name === match.params.directorName
-                    ).director
-                  }
-                  directorMovies={movies.filter(
+          <Route
+            path="/directors/:directorName"
+            render={({ match, history }) => (
+              <DirectorView
+                director={
+                  movies.find(
                     (m) => m.director.name === match.params.directorName
-                  )}
-                  goBack={history.goBack}
-                />
-              )}
-            />
+                  ).director
+                }
+                directorMovies={movies.filter(
+                  (m) => m.director.name === match.params.directorName
+                )}
+                goBack={history.goBack}
+              />
+            )}
+          />
 
-            <Route
-              path="/genres/:genreName"
-              render={({ match, history }) => (
-                <GenreView
-                  genreMovies={movies.filter(
+          <Route
+            path="/genres/:genreName"
+            render={({ match, history }) => (
+              <GenreView
+                genreMovies={movies.filter(
+                  (movie) => movie.genre.name === match.params.genreName
+                )}
+                genre={
+                  movies.find(
                     (movie) => movie.genre.name === match.params.genreName
-                  )}
-                  genre={
-                    movies.find(
-                      (movie) => movie.genre.name === match.params.genreName
-                    ).genre
-                  }
-                  goBack={history.goBack}
-                />
-              )}
-            />
+                  ).genre
+                }
+                goBack={history.goBack}
+              />
+            )}
+          />
 
-            <Route
-              path="/users/:username"
-              render={({ history }) => {
-                if (!user) return <Redirect to="/" />;
-                return (
-                  <ProfileView user={this.state.user} goBack={history.goBack} />
-                );
-              }}
-            />
+          <Route
+            path="/users/:username"
+            render={({ history }) => {
+              if (!user) return <Redirect to="/" />;
+              return (
+                <ProfileView user={userObj} goBack={history.goBack} handleFavorite={this.handleFavorite} movies={movies} />
+              );
+            }}
+          />
 
         </Row>
       </Router>
@@ -169,4 +236,4 @@ let mapStateToProps = state => {
   return { movies: state.movies }
 }
 
-export default connect(mapStateToProps, { setMovies } )(MainView);
+export default connect(mapStateToProps, { setMovies })(MainView);

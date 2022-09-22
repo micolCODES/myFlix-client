@@ -3,7 +3,7 @@ import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './nav-bar.scss';
 
-export const NavBar = ({user}) => {
+export const NavBar = ({ user }) => {
   const handleLogOut = (e) => {
     e.preventDefault();
     localStorage.clear();
@@ -33,6 +33,11 @@ export const NavBar = ({user}) => {
       <Container>
         <Navbar.Brand>
           <Link className="nav-link" to="/">
+          <nav class="navbar navbar-light">
+            <a class="navbar-brand" href="#">
+              MovieApp
+            </a>
+          </nav>
           </Link>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -41,7 +46,7 @@ export const NavBar = ({user}) => {
           className="justify-content-end"
         >
           <Nav className="justify-content-end">
-          {isAuth() && (
+            {isAuth() && (
               <Nav.Link as={Link} to={`/users/${user}`}>
                 {user}
               </Nav.Link>
